@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:travel_app/src/features/main_menu_page.dart';
 import 'package:travel_app/src/res/app_colors.dart';
 import 'package:travel_app/src/res/app_icons.dart';
 import 'package:travel_app/src/res/app_text_styles.dart';
@@ -66,7 +67,9 @@ class WelcomePage extends StatelessWidget{
                     const SizedBox(height: 20,),
                     SizedBox(
                         width: size.width*0.5,
-                        child: ElevatedButton(onPressed: (){}, child:  Text("Let's Tour", style: AppTextStyles.btnTextStyle.copyWith(fontFamily: 'Poppin'),)))
+                        child: ElevatedButton(onPressed: (){
+                          Navigator.of(context).push(MaterialPageRoute(builder: (_)=> const MainMenuPage()),);
+                        }, child:  Text("Let's Tour", style: AppTextStyles.btnTextStyle.copyWith(fontFamily: 'Poppin'),)))
 
                   ],
                 ),

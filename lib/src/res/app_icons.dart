@@ -7,4 +7,6 @@ class AppIcons {
   static const icNavigator = 'assets/images/svgs/ic_navigator.svg';
   static const icNotifications = 'assets/images/svgs/ic_notifications.svg';
   static const icUserProfile = 'assets/images/svgs/ic_user.svg';
+  static const icMapPng ='assets/images/pngs/map.png';
+  static const icMapWhite = 'assets/images/pngs/ic_map.png';
 }
