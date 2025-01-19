@@ -9,7 +9,7 @@ class HomeCubit extends Cubit<HomeStates> {
   void fetchCategoryDetail({required String category})async{
     try{
       emit(LoadingCategoriesState());
-      final categoriesList = await ApiService.getCategoryDetails(category);
+      final categoriesList = await ApiService.getLocationsByCategory(category);
       emit(LoadedCategoriesState(categoriesList: categoriesList));
     }catch(e){
       String errorMessage = e.toString();

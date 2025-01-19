@@ -11,6 +11,8 @@ import 'package:travel_app/src/models/categories_api_response_model.dart';
 import 'package:travel_app/src/res/app_colors.dart';
 import 'package:travel_app/src/res/app_icons.dart';
 import 'package:travel_app/src/res/app_text_styles.dart';
+import 'package:travel_app/src/services/api_service.dart';
+import 'package:travel_app/src/widgets/loading_widgets.dart';
 
 class HomePage extends StatefulWidget{
   const HomePage({super.key});
@@ -21,8 +23,16 @@ class HomePage extends StatefulWidget{
 
 class _HomePageState extends State<HomePage> {
   int _selectedCategoryIndex = 0;
+  List<Map<String, dynamic>> categoriesList = [];
 
-  List<LocationData> categoriesList = [];
+  bool _loadingExploreMore = false;
+
+  List<Map<String, dynamic>> exploreMoreLocations = [];
+  @override
+  void initState() {
+    _initExploreMore();
+    super.initState();
+  }
   @override
   void didChangeDependencies() {
     _initCategoryInfo();
@@ -33,7 +43,7 @@ class _HomePageState extends State<HomePage> {
     final homeCubit = BlocProvider.of<HomeCubit>(context);
     return Scaffold(
       body: SafeArea(
-        child: Padding(
+        child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 10),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -108,30 +118,33 @@ class _HomePageState extends State<HomePage> {
               ),
               const SizedBox(height: 20,),
               SizedBox(
-                height: 220,
+                height: 300,
                 child: BlocConsumer<HomeCubit, HomeStates>(builder: (_,state){
                   if(state is LoadingCategoriesState){
                     return const Center(child: CupertinoActivityIndicator(),);
                   }else if(state is LoadedCategoriesState){
                     categoriesList = state.categoriesList;
+
                     return GridView.builder(
-                      
                       scrollDirection: Axis.horizontal,
                         itemCount: categoriesList.length,
                         itemBuilder: (ctx, index){
-                          LocationData category = categoriesList[index];
+
+                      LocationData category= categoriesList[index]['location'];
+                      String imageUrl = categoriesList[index]['imageUrl'];
                       return GestureDetector(
-                        onTap: ()=> Navigator.of(context).push(MaterialPageRoute(builder: (ctx)=> LocationDetailPage(locationID: category.locationId))),
+                        onTap: ()=> Navigator.of(context).push(MaterialPageRoute(builder: (ctx)=> LocationDetailPage(location: category))),
                         child: Card(
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
                           child: Stack(
                             children: [
                               ClipRRect(
-                                borderRadius: BorderRadius.circular(5),
-                                child: CachedNetworkImage(
-                                  fit: BoxFit.fitWidth,
-                                    width: 200,
-                                    imageUrl: 'https://images.unsplash.com/photo-1600271772470-bd22a42787b3?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTh8fE1vdW50YWluc3xlbnwwfHwwfHx8MA%3D%3D'),
+                                  borderRadius: BorderRadius.circular(5),
+                                  child: CachedNetworkImage(
+                                    imageUrl: imageUrl,
+                                    fit: BoxFit.cover,
+                                    height: 220,
+                                  )
                               ),
                               Positioned(
                                   bottom: 0,
@@ -164,6 +177,57 @@ class _HomePageState extends State<HomePage> {
 
                   return const SizedBox();
                 }, listener: (_, state){}),
+              ),
+              const SizedBox(height: 20,),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text("Explore more",style: AppTextStyles.subHeadingTextStyle.copyWith(fontWeight: FontWeight.w600),),
+                  TextButton(onPressed: ()=>_initExploreMore(), child: Text("See all", style: AppTextStyles.btnTextStyle,))
+                ],
+              ),
+              _loadingExploreMore ? LoadingWidget() :
+              Column(
+                children: List.generate(exploreMoreLocations.length, (index){
+                  String imageUrl = exploreMoreLocations[index]['imageUrl'];
+                  LocationData location = exploreMoreLocations[index]['location'];
+                  return GestureDetector(
+                    onTap: ()=> Navigator.of(context).push(MaterialPageRoute(builder: (ctx)=> LocationDetailPage(location: location))),
+                    child: Card(
+                        elevation: 1,
+                        color: Colors.white,
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
+                        child: Padding(
+                          padding: const EdgeInsets.all(10.0),
+                          child: Row(
+                            children: [
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(5),
+                                child: CachedNetworkImage(imageUrl: imageUrl, width: 100,),
+                              ),
+                              const SizedBox(width: 10,),
+                              SizedBox(
+                                width: 200,
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(location.name, style: AppTextStyles.titleTextStyle,),
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.start,
+                                      children: [
+                                        const Icon(Icons.location_on_rounded, color: Colors.grey, size: 20,),
+                                        Expanded(child: Text(location.address.country,))
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              )
+                            ],
+                          ),
+                        )
+                    ),
+                  );
+                }),
               )
             ],
           ),
@@ -174,5 +238,11 @@ class _HomePageState extends State<HomePage> {
 
   void _initCategoryInfo() {
     context.read<HomeCubit>().fetchCategoryDetail(category: AppData.categories[0]);
+  }
+
+  void _initExploreMore()async{
+    setState(()=>  _loadingExploreMore = true);
+   exploreMoreLocations = await ApiService.getLocationsByCategory('America');
+    setState(()=>  _loadingExploreMore = false);
   }
 }

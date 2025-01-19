@@ -1,7 +1,7 @@
 class AppData {
   static List<String> get categories {
     return [
-      'Mountain', 'Beach', 'Camp', 'Resort', 'Hotel', 'Cafe', 'Restaurants', 'Parks'
+      'Restaurants', 'Camp',   'Parks', 'Mountain', 'Beach',  'Resort', 'Hotel', 'Cafe',
     ];
   }
 
