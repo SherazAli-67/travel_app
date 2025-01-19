@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:travel_app/src/features/main_menu_pages/home_page.dart';
+import 'package:travel_app/src/features/main_menu_pages/trips_page.dart';
 
 import '../bloc_cubit/main_menu_bloc/main_menu_bloc.dart';
 import '../res/app_colors.dart';
@@ -19,7 +20,7 @@ class MainMenuPage extends StatefulWidget{
 class _MainMenuPageState extends State<MainMenuPage> {
   final List<Widget>  pages = [
     const HomePage(),
-    const SizedBox(),
+    const TripsPage(),
     const SizedBox(),
     const SizedBox()
   ];
@@ -47,7 +48,7 @@ class _MainMenuPageState extends State<MainMenuPage> {
       listener: (_, state){},
       builder: (_, state) {
         return Scaffold(
-          body: pages.elementAt(state.tabIndex),
+          body: SafeArea(child: pages.elementAt(state.tabIndex)),
           bottomNavigationBar: Padding(
             padding: const EdgeInsets.all(16.0), // Add some spacing around the navbar
             child: ClipRRect(

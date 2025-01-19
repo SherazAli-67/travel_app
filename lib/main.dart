@@ -8,6 +8,7 @@ import 'package:travel_app/src/bloc_cubit/main_menu_bloc/main_menu_bloc.dart';
 import 'package:travel_app/src/features/main_menu_page.dart';
 import 'package:travel_app/src/providers/favorites_provider.dart';
 import 'package:travel_app/src/res/app_colors.dart';
+import 'package:travel_app/src/welcome_page.dart';
 
 void main() async{
   await dotenv.load(fileName: 'assets/.env');

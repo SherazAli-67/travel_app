@@ -1,8 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:travel_app/src/app_data/app_data.dart';
@@ -32,15 +30,29 @@ class _LocationDetailPageState extends State<LocationDetailPage> {
   late PhotosApiResponseModel photosApiResponseModel;
   late ReviewResponse reviewResponse;
   int _selectedPictureIndex = 0;
+
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
+  void initState() {
     _initLocationDetails();
+    super.initState();
   }
   @override
   Widget build(BuildContext context) {
-    // final favLocationProvider = Provider.of<FavLocationsProvider>(context);
+    final favProvider = Provider.of<FavLocationsProvider>(context);
+    bool isFav = favProvider.isFav(widget.location);
     return Scaffold(
+      appBar: AppBar(
+        title: Text(widget.location.name),
+        actions: [
+          IconButton(onPressed: (){
+            if(isFav){
+              favProvider.removeFromFavLocation(widget.location);
+            }else{
+              favProvider.addToFavLocations(widget.location);
+            }
+          }, icon: isFav ? const Icon(Icons.favorite, color: Colors.red,) : const Icon(Icons.favorite_border_rounded))
+        ],
+      ),
       body: SafeArea(
         child: BlocConsumer<LocationDetailsCubit, LocationDetailStates>(
 
@@ -59,18 +71,6 @@ class _LocationDetailPageState extends State<LocationDetailPage> {
                       child: Column(
                         // alignment: Alignment.bottomCenter,
                         children: [
-                          AppBar(
-                            leading: IconButton(onPressed: ()=> Navigator.of(context).pop(), icon: const Icon(Icons.navigate_before_rounded),),
-                            title: Text(_locationDetailsApiResponse['name'], style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w600),),
-                            actions: [
-                              IconButton(onPressed: (){
-                                // favLocationProvider.addToFavLocations(widget.location);
-                              }, icon:
-                              // isFav ? const Icon(Icons.favorite, color: Colors.red,) :
-                              SvgPicture.asset(AppIcons.icFavorite))
-                            ],
-                            leadingWidth: 20,
-                          ),
                           Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 10.0),
                             child: ConstrainedBox(
@@ -221,21 +221,6 @@ class _LocationDetailPageState extends State<LocationDetailPage> {
                         ],
                       ),
                     ),
-                    /*Positioned(
-                      bottom: 20,
-                      left: 20,
-                      right: 20,
-                      child: SizedBox(
-                        height: 50,
-                        width: double.infinity,
-                        child: ElevatedButton(
-
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: AppColors.primaryColor
-                            ),
-                            onPressed: (){}, child: Text("Book Now", style: AppTextStyles.btnTextStyle.copyWith(color: Colors.white),)),
-                      ),
-                    )*/
                   ],
                 );
               }
