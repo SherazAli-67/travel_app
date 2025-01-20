@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 class ReviewResponse {
   final List<Review> data;
 
@@ -184,10 +182,3 @@ class OwnerResponse {
   }
 }
 
-// Usage Example:
-void main() {
-  String jsonString = 'YOUR_JSON_STRING_HERE';
-  Map<String, dynamic> jsonData = json.decode(jsonString);
-  ReviewResponse reviewResponse = ReviewResponse.fromJson(jsonData);
-  print(reviewResponse.data.first.title);
-}

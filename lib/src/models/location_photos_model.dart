@@ -1,4 +1,3 @@
-import 'dart:convert';
 
 class TripAdvisorResponse {
   final List<Data> data;

@@ -1,4 +1,3 @@
-import 'package:travel_app/src/models/categories_api_response_model.dart';
 
 abstract class HomeStates {}
 

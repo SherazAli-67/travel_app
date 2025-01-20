@@ -12,9 +12,6 @@ class ApiService {
 
     final apiKey = dotenv.env['TRIP_API'];
 
-   /* const url = 'https://api.content.tripadvisor.com/api/v1/location/search?key=482FF4AF3A154040BF116A6FDE2E5B67&searchQuery=Restaurants&category=Hotels&language=en';
-    const options = {method: 'GET', headers: {accept: 'application/json'}};
-*/
     const String baseUrl =
         'https://api.content.tripadvisor.com/api/v1/location/search';
 
@@ -28,7 +25,6 @@ class ApiService {
 
     if (response.statusCode == 200) {
       final jsonResponse = json.decode(response.body);
-      debugPrint("Response: ${response.body}");
       CategoryApiResponse apiResponse = CategoryApiResponse.fromJson(jsonResponse);
       locations =  apiResponse.data;
 
@@ -81,12 +77,6 @@ class ApiService {
 
   static Future<PhotosApiResponseModel?> getLocationPhotos({required String locationID, int? limit}) async{
 
-    /*
-    * const url = 'https://api.content.tripadvisor.com/api/v1/location/4053480/photos?key=482FF4AF3A154040BF116A6FDE2E5B67&language=en&limit=1';
-const options = {method: 'GET', headers: {accept: 'application/json'}};
-
-    *
-    * */
     final apiKey = dotenv.env['TRIP_API'];
     const String baseUrl = 'https://api.content.tripadvisor.com/api/v1/location';
     String url ='';

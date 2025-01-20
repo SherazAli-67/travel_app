@@ -1,10 +1,10 @@
-import 'dart:io';
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:travel_app/src/features/main_menu_pages/home_page.dart';
 import 'package:travel_app/src/features/main_menu_pages/trips_page.dart';
+import 'package:travel_app/src/features/main_menu_pages/wishlist_page.dart';
 
 import '../bloc_cubit/main_menu_bloc/main_menu_bloc.dart';
 import '../res/app_colors.dart';
@@ -21,7 +21,7 @@ class _MainMenuPageState extends State<MainMenuPage> {
   final List<Widget>  pages = [
     const HomePage(),
     const TripsPage(),
-    const SizedBox(),
+    const WishlistPage(),
     const SizedBox()
   ];
   @override
@@ -136,15 +136,4 @@ class _MainMenuPageState extends State<MainMenuPage> {
     );
   }
 
-  BottomNavigationBarItem _buildBottomNavigationBarItem(MainMenuState state, {required String icon, required String label,  required int index, bool isTennisCourt = false}) {
-    return BottomNavigationBarItem(
-        icon: SvgPicture.asset(
-          icon,
-          color: state.tabIndex == index
-              ? Colors.black
-              : AppColors.greyColor,
-        ),
-        label: ''
-    );
-  }
 }

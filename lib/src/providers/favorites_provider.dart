@@ -1,23 +1,29 @@
 import 'package:flutter/cupertino.dart';
-import 'package:travel_app/src/models/categories_api_response_model.dart';
+import 'package:travel_app/src/models/wishlist_locations_model.dart';
 
-class FavLocationsProvider extends ChangeNotifier{
-  final List<LocationData> _favLocations = [];
+class WishListLocationsProvider extends ChangeNotifier{
+  final List<WishlistLocationsModel> _favLocations = [];
 
-  List<LocationData> get favLocations => _favLocations;
+  List<WishlistLocationsModel> get wishListLocations => _favLocations;
 
-  void addToFavLocations(LocationData location){
-    _favLocations.add(location);
+  void addToFavLocations(dynamic locationApiResponse, String imageUrl){
+    WishlistLocationsModel wishlistLocationsModel = WishlistLocationsModel(
+        locationID: locationApiResponse['location_id'],
+        title: locationApiResponse['name'],
+        ratings: locationApiResponse['rating'] ?? '4.5',
+        description: locationApiResponse['description'] ?? '',
+        imageUrl: imageUrl);
+    _favLocations.add(wishlistLocationsModel);
     notifyListeners();
   }
 
-  void removeFromFavLocation(LocationData location){
-    _favLocations.remove(location);
+  void removeFromFavLocation(String locationID){
+    _favLocations.removeWhere((location)=> location.locationID == locationID);
     notifyListeners();
   }
 
-  bool isFav(LocationData location) {
-    return _favLocations.contains(location);
+  bool isFav(String locationID) {
+    return _favLocations.where((location)=> location.locationID == locationID).toList().isNotEmpty;
   }
 
 }

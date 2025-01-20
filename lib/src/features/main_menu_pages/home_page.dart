@@ -171,7 +171,7 @@ class _HomePageState extends State<HomePage> {
               TextButton(onPressed: ()=>_initExploreMore(), child: const Text("See all", style: AppTextStyles.btnTextStyle,))
             ],
           ),
-          _loadingExploreMore ? LoadingWidget() :
+          _loadingExploreMore ? const LoadingWidget() :
           Column(
             children: List.generate(exploreMoreLocations.length, (index){
               String imageUrl = exploreMoreLocations[index]['imageUrl'];

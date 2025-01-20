@@ -26,7 +26,7 @@ class LocationDetailPage extends StatefulWidget{
 
 class _LocationDetailPageState extends State<LocationDetailPage> {
 
-  dynamic _locationDetailsApiResponse;
+  Map<String, dynamic>? _locationDetailsApiResponse;
   late PhotosApiResponseModel photosApiResponseModel;
   late ReviewResponse reviewResponse;
   int _selectedPictureIndex = 0;
@@ -38,17 +38,17 @@ class _LocationDetailPageState extends State<LocationDetailPage> {
   }
   @override
   Widget build(BuildContext context) {
-    final favProvider = Provider.of<FavLocationsProvider>(context);
-    bool isFav = favProvider.isFav(widget.location);
+    final favProvider = Provider.of<WishListLocationsProvider>(context);
+    bool isFav = favProvider.isFav(widget.location.locationId);
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.location.name),
         actions: [
           IconButton(onPressed: (){
             if(isFav){
-              favProvider.removeFromFavLocation(widget.location);
+              favProvider.removeFromFavLocation(widget.location.locationId);
             }else{
-              favProvider.addToFavLocations(widget.location);
+              favProvider.addToFavLocations(_locationDetailsApiResponse, photosApiResponseModel.data.first.images.large.url);
             }
           }, icon: isFav ? const Icon(Icons.favorite, color: Colors.red,) : const Icon(Icons.favorite_border_rounded))
         ],
@@ -58,13 +58,13 @@ class _LocationDetailPageState extends State<LocationDetailPage> {
 
             builder: (_, state){
               if(state is LoadingLocDetailsState){
-                return LoadingWidget();
+                return const LoadingWidget();
               }else if(state is LoadingLocDetailsFailed){
                 return Center(child: Text(state.errorMessage, style: AppTextStyles.mediumTextStyle,),);
               }else if(state is LoadedLocDetailsState){
                 _locationDetailsApiResponse = state.locDetails;
                 photosApiResponseModel = state.photosApiResponseModel!;
-                String ratingCount = NumberFormat.compact().format(int.parse(_locationDetailsApiResponse['num_reviews']));
+                String ratingCount = NumberFormat.compact().format(int.parse(_locationDetailsApiResponse!['num_reviews'] ?? '100'));
                 return Stack(
                   children: [
                     SingleChildScrollView(
@@ -131,16 +131,16 @@ class _LocationDetailPageState extends State<LocationDetailPage> {
                                         children: [
                                           const Icon(Icons.star,color: Colors.amber,),
                                           const SizedBox(width: 5,),
-                                          Text('${_locationDetailsApiResponse['rating']}', style: AppTextStyles.subHeadingTextStyle,)
+                                          Text('${_locationDetailsApiResponse!['rating'] ?? 100}', style: AppTextStyles.subHeadingTextStyle,)
                                         ],
                                       ),
                                     ],
                                   ),
 
                                   const SizedBox(height: 10,),
-                                  Text(_locationDetailsApiResponse['description']?? ''),
+                                  Text(_locationDetailsApiResponse!['description']?? ''),
                                   const SizedBox(height: 20,),
-                                  if(_locationDetailsApiResponse['features'] != null)
+                                  if(_locationDetailsApiResponse!['features'] != null)
                                     Column(
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
@@ -148,9 +148,9 @@ class _LocationDetailPageState extends State<LocationDetailPage> {
                                         const SizedBox(height: 10,),
                                         SizedBox(height: 40, child: ListView.builder(
                                             scrollDirection: Axis.horizontal,
-                                            itemCount: _locationDetailsApiResponse['features'].length,
+                                            itemCount: _locationDetailsApiResponse!['features'].length,
                                             itemBuilder: (ctx, index){
-                                              String feature = _locationDetailsApiResponse['features'][index];
+                                              String feature = _locationDetailsApiResponse!['features'][index];
                                               return Container(
                                                 alignment: Alignment.center,
                                                 margin: const EdgeInsets.only(right: 10),
@@ -181,7 +181,7 @@ class _LocationDetailPageState extends State<LocationDetailPage> {
                                   const SizedBox(height: 10,),
                                   FutureBuilder(future: ApiService.getLocationReviews(locationID: widget.location.locationId), builder: (ctx, snapshot){
                                     if(snapshot.connectionState == ConnectionState.waiting){
-                                      return LoadingWidget();
+                                      return const LoadingWidget();
                                     }else if(snapshot.hasError){
                                       return Center(child: Text(snapshot.error.toString()),);
                                     }else if(snapshot.hasData){
